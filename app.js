@@ -17,6 +17,7 @@ class App extends Component {
     this.handleAddItem = this.handleAddItem.bind(this);
     this.setSource = this.setSource.bind(this);
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
+    this.handleToggleComplete = this.handleToggleComplete.bind(this);
   }
   setSource(items, itemsDatasource, otherState = {}) {
     this.setState({
@@ -24,6 +25,16 @@ class App extends Component {
       dataSource: this.state.dataSource.cloneWithRows(itemsDatasource),
       ... otherState
     });
+  }
+  handleToggleComplete(key, complete) {
+    const newItems = this.state.items.map((item) => {
+      if (item.key !== key) return item;
+      return {
+        ...item,
+        complete
+      }
+    });
+    this.setSource(newItems, newItems);
   }
   handleAddItem() {
     if(!this.state.value) return;
@@ -64,6 +75,7 @@ class App extends Component {
               return (
                 <Row
                   key={key}
+                  onComplete={(complete) => this.handleToggleComplete(key, complete)}
                   {...value}
                 />
               )
