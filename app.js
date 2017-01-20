@@ -7,10 +7,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      allComplete: false,
       value: "",
       items: []
     };
     this.handleAddItem = this.handleAddItem.bind(this);
+    this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
   }
   handleAddItem() {
     if(!this.state.value) return;
@@ -27,6 +29,18 @@ class App extends Component {
       value: ""
     });
   }
+  handleToggleAllComplete() {
+    const complete = !this.state.allComplete;
+    const newItems= this.state.items.map((item) => ({
+      ...item,
+      complete
+    }));
+    console.table(newItems);
+    this.setState({
+      items: newItems,
+      allComplete: complete
+    });
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -34,6 +48,7 @@ class App extends Component {
           value={this.state.value}
           onAddItem={this.handleAddItem}
           onChange={(value) => this.setState({ value })}
+          onToggleAllComplete={this.handleToggleAllComplete}
         />
         <View style={styles.content}>
 
