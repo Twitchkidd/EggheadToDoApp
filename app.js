@@ -28,6 +28,7 @@ class App extends Component {
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
     this.handleToggleComplete = this.handleToggleComplete.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.handleClearComplete = this.handleClearComplete.bind(this);
   }
   setSource(items, itemsDatasource, otherState = {}) {
     this.setState({
@@ -40,6 +41,10 @@ class App extends Component {
     const newItems = this.state.items.filter((item) => {
       return item.key !== key;
     });
+    this.setSource(newItems, filterItems(this.state.filter, newItems));
+  }
+  handleClearComplete() {
+    const newItems = filterItems("ACTIVE", this.state.items);
     this.setSource(newItems, filterItems(this.state.filter, newItems));
   }
   handleFilter(filter) {
@@ -108,6 +113,7 @@ class App extends Component {
         <Footer
           count={filterItems("ACTIVE", this.state.items).length}
           onFilter={this.handleFilter}
+          onClearComplete={this.handleClearComplete}
           filter={this.state.filter}
         />
       </View>
