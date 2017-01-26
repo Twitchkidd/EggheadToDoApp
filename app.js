@@ -4,12 +4,20 @@ import Header from './header';
 import Footer from './footer';
 import Row from './row';
 
+const filterItems = (filter, items) => {
+  return items.filter((items) => {
+    if (filter === "ALL") return true;
+    if (filter === "COMPLETED") return items.complete;
+    if (filter === "ACTIVE") return !items.complete;
+  });
+}
 class App extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       allComplete: false,
+      filter: "ALL",
       value: "",
       items: [],
       dataSource: ds.cloneWithRows([])
@@ -19,6 +27,7 @@ class App extends Component {
     this.handleRemoveItem =this.handleRemoveItem.bind(this);
     this.handleToggleAllComplete = this.handleToggleAllComplete.bind(this);
     this.handleToggleComplete = this.handleToggleComplete.bind(this);
+    this.handleFilter = this.handleFilter.bind(this);
   }
   setSource(items, itemsDatasource, otherState = {}) {
     this.setState({
@@ -31,7 +40,10 @@ class App extends Component {
     const newItems = this.state.items.filter((item) => {
       return item.key !== key;
     });
-    this.setSource(newItems, newItems);
+    this.setSource(newItems, filterItems(this.state.filter, newItems));
+  }
+  handleFilter(filter) {
+    this.setSource(this.state.items, filterItems(filter, this.state.items), { filter })
   }
   handleToggleComplete(key, complete) {
     const newItems = this.state.items.map((item) => {
@@ -41,7 +53,7 @@ class App extends Component {
         complete
       }
     });
-    this.setSource(newItems, newItems);
+    this.setSource(newItems, filterItems(this.state.filter, newItems));
   }
   handleAddItem() {
     if(!this.state.value) return;
@@ -53,7 +65,7 @@ class App extends Component {
         complete: false
       }
     ];
-    this.setSource(newItems, newItems, { value: "" });
+    this.setSource(newItems, filterItems(this.state.filter, newItems), { value: "" });
   }
   handleToggleAllComplete() {
     const complete = !this.state.allComplete;
@@ -61,7 +73,7 @@ class App extends Component {
       ...item,
       complete
     }));
-    this.setSource(newItems, newItems, { allComplete: complete });
+    this.setSource(newItems, filterItems(this.state.filter, newItems), { allComplete: complete });
   }
   render() {
     return (
@@ -93,7 +105,10 @@ class App extends Component {
             }}
           />
         </View>
-        <Footer />
+        <Footer
+          onFilter={this.handleFilter}
+          filter={this.state.filter}
+        />
       </View>
     );
   }
